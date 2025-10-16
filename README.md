@@ -35,8 +35,8 @@ Bienvenue dans le Hackathon Ynov Toulouse 2025 !
 - IA & Data 1 : MADJINDA L.
 - IA & Data 2 : CHIMENE J.
 - IoT/Mobile / Systèmes Embarqués 1 : BENTOGLIO M.
-- IoT/Mobile / Systèmes Embarqués 1 : LANIC G.
-- IoT/Mobile / Systèmes Embarqués 1 : GOURBAL F.
+- IoT/Mobile / Systèmes Embarqués 2 : LANIC G.
+- IoT/Mobile / Systèmes Embarqués 3 : GOURBAL F.
 
 ## Table des matières
 
