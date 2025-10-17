@@ -47,7 +47,7 @@ async function reserveSlot(dayIdx: number) {
   error.value = ''
   success.value = ''
   try {
-    const res = await fetch('/api/calendar/reserve', {
+    const res = await fetch('http://35.180.130.22:443/api/calendar/reserve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date, slot })

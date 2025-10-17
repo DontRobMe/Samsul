@@ -39,7 +39,7 @@ async function submit() {
 
   loading.value = true
   try {
-    const url = mode.value === 'login' ? '/auth/login' : '/auth/register'
+    const url = mode.value === 'login' ? 'http://35.180.130.22:443/auth/login' : 'http://35.180.130.22:443/auth/register'
     const body: any = { email: email.value, password: password.value }
 
     const res = await fetch(url, {

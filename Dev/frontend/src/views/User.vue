@@ -32,8 +32,8 @@ async function fetchData() {
 
   try {
     const [resR, resB] = await Promise.all([
-      fetch('/api/user/reservations', opts),
-      fetch('/api/user/bets', opts)
+      fetch('http://35.180.130.22:443/api/user/reservations', opts),
+      fetch('http://35.180.130.22:443/api/user/bets', opts)
     ])
 
     const parseJsonOrThrow = async (res: Response) => {

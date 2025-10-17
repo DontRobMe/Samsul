@@ -112,7 +112,7 @@
 import { reactive, ref, onMounted, onUnmounted, computed } from 'vue'
 import Header from '@/components/Header.vue'
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
+const API_BASE = 'http://35.180.130.22:443/'
 const USE_MOCK = true
 const MATCH_DURATION_MIN = 30
 const REFRESH_MS = 30_000
