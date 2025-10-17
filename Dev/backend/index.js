@@ -1,22 +1,24 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const pool = require('./db');
 
 const app = express();
-app.use(cors());            // autorise le front en dev
-app.use(express.json());    // parse JSON
+app.use(cors());
+app.use(express.json());
 
-// Routes d'exemple
-app.get('/api/health', (req, res) => {
-  res.json({ ok: true, time: new Date().toISOString() });
+// Healthcheck DB
+app.get('/health/db', async (req, res) => {
+  try {
+    const r = await pool.query('SELECT NOW() as now');
+    res.json({ ok: true, now: r.rows[0].now });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
 
-app.get('/api/items', (req, res) => {
-  res.json([
-    { id: 1, name: 'Raquette' },
-    { id: 2, name: 'Balles' },
-  ]);
+const PORT = Number(process.env.PORT || 3000);
+app.listen(PORT, () => {
+  console.log(`API on http://localhost:${PORT}`);
 });
-
-const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`API on http://localhost:${port}`));
