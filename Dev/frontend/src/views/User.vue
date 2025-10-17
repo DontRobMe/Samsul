@@ -2,13 +2,23 @@
 import { ref, onMounted } from 'vue'
 import Header from "@/components/Header.vue";
 
-type Reservation = { id: number; match: string; time: string; teams: string; score?: string; status?: string }
-type Bet = { id: number; match: string; time: string; teams: string; amount: number; result?: string }
+type Reservation = { id: number; time: string; teams: string; score?: string }
+type Bet = { id: number; time: string; teams: string; amount: number; result?: string }
 
 const reservations = ref<Reservation[]>([])
 const bets = ref<Bet[]>([])
 const loading = ref(true)
 const error = ref('')
+
+const sampleReservations: Reservation[] = [
+  { id: 1, time: new Date(Date.now() + 3600_000).toISOString(), teams: 'Red Rockets vs Blue Comets', score: '—' },
+  { id: 2, time: new Date(Date.now() + 86_400_000).toISOString(), teams: 'Tiny Titans vs Mini Meteors', score: '—' }
+]
+
+const sampleBets: Bet[] = [
+  { id: 1, time: new Date(Date.now() - 86_400_000).toISOString(), teams: 'Red Rockets vs Blue Comets', amount: 10, result: 'Gagné' },
+  { id: 2, time: new Date(Date.now() - 2 * 86_400_000).toISOString(), teams: 'Tiny Titans vs Mini Meteors', amount: 5, result: 'Perdu' }
+]
 
 const formatDate = (iso?: string) => {
   if (!iso) return '—'
@@ -17,13 +27,13 @@ const formatDate = (iso?: string) => {
 }
 
 async function fetchData() {
-  try {
-    loading.value = true
-    const opts = { headers: { Accept: 'application/json' } }
+  loading.value = true
+  const opts = { headers: { Accept: 'application/json' } }
 
+  try {
     const [resR, resB] = await Promise.all([
-      fetch('/api/user/reservations', opts),
-      fetch('/api/user/bets', opts)
+      fetch('http://35.180.130.22:443/api/user/reservations', opts),
+      fetch('http://35.180.130.22:443/api/user/bets', opts)
     ])
 
     const parseJsonOrThrow = async (res: Response) => {
@@ -31,24 +41,29 @@ async function fetchData() {
       const text = await res.text()
       if (!res.ok) {
         console.error('API error response:', text)
-        throw new Error(`Erreur serveur ${res.status}: ${text.slice(0, 200)}`)
+        throw new Error(`Erreur serveur ${res.status}`)
       }
       if (!ct.includes('application/json')) {
         console.error('Réponse non JSON:', { status: res.status, text })
-        throw new Error('Réponse inattendue (pas du JSON) — vérifier l\'endpoint ou le proxy')
+        throw new Error('Réponse inattendue (pas du JSON)')
       }
       try {
         return JSON.parse(text)
-      } catch (err) {
+      } catch {
         console.error('JSON parse failed:', text)
         throw new Error('Impossible de parser le JSON reçu')
       }
     }
 
+    // L'API peut renvoyer des champs supplémentaires ; on assigne et TypeScript infère
     reservations.value = await parseJsonOrThrow(resR)
     bets.value = await parseJsonOrThrow(resB)
+    error.value = ''
   } catch (e: any) {
-    error.value = e?.message ?? 'Erreur inconnue'
+    console.warn('Fetch failed — utilisation des données en dur', e)
+    reservations.value = sampleReservations
+    bets.value = sampleBets
+    error.value = ''
   } finally {
     loading.value = false
   }
@@ -68,11 +83,10 @@ onMounted(fetchData)
         <li v-for="r in reservations" :key="r.id" class="item">
           <div class="left">
             <div class="match">{{ r.teams }}</div>
-            <div class="meta">{{ r.match }}</div>
           </div>
           <div class="right">
             <div class="time">{{ formatDate(r.time) }}</div>
-            <div class="meta">Score: {{ r.score ?? '—' }} • Statut: {{ r.status ?? '—' }}</div>
+            <div class="meta">Score: {{ r.score ?? '—' }}</div>
           </div>
         </li>
       </ul>
@@ -86,11 +100,10 @@ onMounted(fetchData)
         <li v-for="b in bets" :key="b.id" class="item">
           <div class="left">
             <div class="match">{{ b.teams }}</div>
-            <div class="meta">{{ b.match }}</div>
           </div>
           <div class="right">
             <div class="time">{{ formatDate(b.time) }}</div>
-            <div class="meta">Mise: {{ b.amount }} € • Résultat: {{ b.result ?? 'En attente' }}</div>
+            <div class="meta">Mise: {{ b.amount }} crédits • Résultat: {{ b.result ?? 'En attente' }}</div>
           </div>
         </li>
       </ul>

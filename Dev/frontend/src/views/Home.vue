@@ -28,7 +28,6 @@
                   </span>
                   <span>
                     <strong class="text-style">{{ match.equipeB[0] }} et {{ match.equipeB[1] }}</strong>
-
                   </span>
                 </div>
               </v-card-text>
