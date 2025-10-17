@@ -1,9 +1,9 @@
-// db.js (CommonJS)
 require('dotenv').config();
 const { Pool } = require('pg');
 
+const wantsSSL = String(process.env.PGSSL || '').toLowerCase();
 const ssl =
-  String(process.env.PGSSL).toLowerCase() === 'true'
+  wantsSSL === 'true' || wantsSSL === 'require'
     ? { rejectUnauthorized: false }
     : false;
 
@@ -14,15 +14,41 @@ const pool = new Pool({
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   ssl,
+  connectionTimeoutMillis: 8000,
+  idleTimeoutMillis: 10000,
+  max: 10,
 });
+
+pool.on('error', (err) => {
+  console.error('[PG] Idle client error:', err.message);
+});
+
+async function ping() {
+  try {
+    const { rows } = await pool.query('SELECT 1 AS ok');
+    return rows?.[0]?.ok === 1;
+  } catch (e) {
+    console.error('[PG] Ping error:', e.message);
+    return false;
+  }
+}
+
+async function closePool() {
+  try {
+    await pool.end();
+    console.log('[PG] Pool closed');
+  } catch (e) {
+    console.error('[PG] Error closing pool:', e.message);
+  }
+}
 
 (async () => {
   try {
     await pool.query('SELECT 1');
-    console.log('Connecté à PostgreSQL');
+    console.log('✅ PostgreSQL OK');
   } catch (err) {
-    console.error('Connexion PostgreSQL échouée:', err.message);
+    console.error('❌ PostgreSQL KO:', err.message);
   }
 })();
 
-module.exports = pool;
+module.exports = { pool, ping, closePool };
