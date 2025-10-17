@@ -127,6 +127,29 @@ app.post('/final', async (req, res) => {
   }
 });
 
+// Stockage en mémoire des réservations avec date et slot
+const calendarReservations = [];
+
+// Récupérer tous les créneaux réservés
+app.get('/api/calendar/reservations', (req, res) => {
+  res.json(calendarReservations);
+});
+
+// Réserver un créneau (date au format YYYY-MM-DD, slot = index 15min)
+app.post('/api/calendar/reserve', (req, res) => {
+  const { date, slot } = req.body || {};
+  // Validation
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) || typeof slot !== 'number') {
+    return res.status(400).json({ error: 'Paramètres invalides (date ou slot)' });
+  }
+  // Vérifier si le créneau est déjà réservé
+  if (calendarReservations.some(r => r.date === date && r.slot === slot)) {
+    return res.status(409).json({ error: 'Créneau déjà réservé pour cette date' });
+  }
+  calendarReservations.push({ date, slot });
+  res.json({ success: true });
+});
+
 const PORT = Number(process.env.PORT || 4000);
 const server = app.listen(PORT, async () => {
   console.log(`API running on http://localhost:${PORT}`);
