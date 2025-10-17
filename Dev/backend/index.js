@@ -27,7 +27,7 @@ app.get('/now', async (_req, res) => {
   }
 });
 
-app.post('/api/events/realtime', async (req, res) => {
+app.post('/realtime', async (req, res) => {
   const { event, player1_score, player2_score, elapsed_time } = req.body || {};
   if (event !== 'realtime') {
     return res.status(400).json({ error: 'event doit être "realtime".' });
@@ -59,12 +59,12 @@ app.post('/api/events/realtime', async (req, res) => {
       duration_s
     });
   } catch (e) {
-    console.error('[POST /api/events/realtime] DB error:', e);
+    console.error('[POST /realtime] DB error:', e);
     return res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
 
-app.post('/api/events/final', async (req, res) => {
+app.post('/final', async (req, res) => {
   const { event, winner, player1_score, player2_score, total_time } = req.body || {};
   if (event !== 'final') {
     return res.status(400).json({ error: 'event doit être "final".' });
