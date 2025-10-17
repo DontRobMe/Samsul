@@ -33,7 +33,6 @@ app.post('/realtime', async (req, res) => {
     return res.status(400).json({ error: 'event doit être "realtime".' });
   }
 
-  const game_id = req.body.game_id || randomUUID();
   const score_red = Number(player1_score ?? 0);
   const score_blue = Number(player2_score ?? 0);
   const duration_s = Math.max(0, Math.round(Number(elapsed_time ?? 0)));
@@ -41,19 +40,14 @@ app.post('/realtime', async (req, res) => {
   try {
     await pool.query(
       `
-      INSERT INTO games (game_id, game_datetime, score_red, score_blue, duration_s)
-      VALUES ($1, NOW(), $2, $3, $4)
-      ON CONFLICT (game_id) DO UPDATE
-        SET score_red  = EXCLUDED.score_red,
-            score_blue = EXCLUDED.score_blue,
-            duration_s = EXCLUDED.duration_s
+      INSERT INTO games (game_datetime, score_red, score_blue, duration_s)
+      VALUES (NOW(), $1, $2, $3)
       `,
-      [game_id, score_red, score_blue, duration_s]
+      [score_red, score_blue, duration_s]
     );
 
     return res.status(200).json({
       ok: true,
-      game_id,
       score_red,
       score_blue,
       duration_s
@@ -70,7 +64,6 @@ app.post('/final', async (req, res) => {
     return res.status(400).json({ error: 'event doit être "final".' });
   }
 
-  const game_id = req.body.game_id || randomUUID();
   const winner_text = winnerToText(winner);
   if (!winner_text) {
     return res.status(400).json({ error: 'winner doit être 1 (Red) ou 2 (Blue).' });
@@ -95,24 +88,18 @@ app.post('/final', async (req, res) => {
 
     await client.query(
       `
-      INSERT INTO games (game_id, game_datetime, score_red, score_blue, winner, duration_s)
-      VALUES ($1, NOW(), $2, $3, $4, $5)
-      ON CONFLICT (game_id) DO UPDATE
-        SET score_red  = EXCLUDED.score_red,
-            score_blue = EXCLUDED.score_blue,
-            winner     = EXCLUDED.winner,
-            duration_s = EXCLUDED.duration_s
+      INSERT INTO games (game_datetime, score_red, score_blue, winner, duration_s)
+      VALUES (NOW(), $1, $2, $3, $4)
       `,
-      [game_id, score_red, score_blue, winner_text, duration_s]
+      [score_red, score_blue, winner_text, duration_s]
     );
 
-    await client.query('SELECT settle_moneyline_bets($1)', [game_id]);
+    await client.query('SELECT settle_moneyline_bets($1)', [score_red > score_blue ? 'Red' : 'Blue']);
 
     await client.query('COMMIT');
 
     return res.status(200).json({
       ok: true,
-      game_id,
       winner: winner_text,
       score_red,
       score_blue,
