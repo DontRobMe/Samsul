@@ -135,7 +135,6 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
-import mockData from '../data/mockData';
 
 // ⚙️ Config API
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000'
