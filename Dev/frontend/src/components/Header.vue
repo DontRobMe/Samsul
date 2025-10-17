@@ -1,11 +1,13 @@
 <template>
   <v-app-bar elevation="0" :color="headerColor" class="header-bar">
-    <v-btn :ripple="false" to="/" variant="text" class="brand" exact>samsul</v-btn>
-    <v-btn :ripple="false" to="/reservation" variant="text" class="nav-link">Réservation</v-btn>
-    <v-btn :ripple="false" to="/paris" variant="text" class="nav-link">Paris</v-btn>
+    <v-btn to="/" variant="text" class="brand" exact>samsul</v-btn>
+    <v-btn to="/reservation" variant="text" class="nav-link">Réservation</v-btn>
+    <v-btn to="/paris" variant="text" class="nav-link">Paris</v-btn>
     <v-spacer />
     <v-avatar size="38" class="profile">
+      <v-btn to="/user">
       <v-icon icon="mdi-account" color="white" />
+      </v-btn>
     </v-avatar>
   </v-app-bar>
 </template>
