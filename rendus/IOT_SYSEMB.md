@@ -29,3 +29,9 @@ Autrement, il n'y a pas de format imposé, mais essayez de rester clair et conci
 En conclusion, cela doit résumer votre travail en tant qu'expert.e IoT / Systèmes Embarqués, et vous permettre de garder un trace écrite de votre contribution au projet.
 
 Merci de votre participation, et bon courage pour la suite du hackathon !
+
+# Rapport IoT/Mobile / Systèmes Embarqués
+
+Nous avons conçu une solution innovante permettant de suivre les scores des équipes grâce à des capteurs intégrés directement dans les gouttières du baby-foot. Ces capteurs détectent le passage de la balle et incrémentent automatiquement le score de l’équipe concernée, tout en offrant un système résistant aux chocs et facile à installer.
+
+De plus, nous avons mis en place un système de réservation via une application mobile, permettant aux étudiants de réserver des créneaux pour jouer, évitant ainsi les files d’attente et les conflits. Les joueurs peuvent ensuite débloquer le baby-foot à l’aide de leur carte magnétique une fois la réservation effectuée.
